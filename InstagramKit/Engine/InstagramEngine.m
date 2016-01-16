@@ -129,13 +129,13 @@
                                   error:(NSError *__autoreleasing *)error
 {
     NSURL *appRedirectURL = [NSURL URLWithString:self.appRedirectURL];
-    if (![appRedirectURL.scheme isEqual:url.scheme] || ![appRedirectURL.host isEqual:url.host])
+    if (![appRedirectURL.scheme isEqual:url.scheme] || (![appRedirectURL.host isEqual:url.host] && appRedirectURL.host != nil))
     {
         return NO;
     }
     
     BOOL success = YES;
-    NSString *token = [self queryStringParametersFromString:url.fragment][@"access_token"];
+    NSString *token = [self queryStringParametersFromString:url.resourceSpecifier][@"access_token"];
     if (token)
     {
         self.accessToken = token;
@@ -205,6 +205,11 @@
         if ([pairs count] != 2) return;
         
         NSString *key = [pairs[0] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+        if ([[key substringToIndex:1] isEqualToString: @"#"]) {
+            key = [key substringFromIndex:1];
+        }
+        
         NSString *value = [pairs[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         [dict setObject:value forKey:key];
     }];
