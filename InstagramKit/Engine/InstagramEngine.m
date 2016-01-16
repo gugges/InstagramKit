@@ -135,7 +135,19 @@
     }
     
     BOOL success = YES;
-    NSString *token = [self queryStringParametersFromString:url.resourceSpecifier][@"access_token"];
+    
+    NSString *urlFormatted = @"";
+    
+    if (url.fragment)
+    {
+        urlFormatted = url.fragment;
+    }
+    else
+    {
+        urlFormatted = url.resourceSpecifier;
+    }
+    
+    NSString *token = [self queryStringParametersFromString:urlFormatted][@"access_token"];
     if (token)
     {
         self.accessToken = token;
