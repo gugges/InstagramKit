@@ -32,6 +32,7 @@
 @property (nonatomic, copy) NSString *link;
 @property (nonatomic, strong) InstagramComment *caption;
 @property (nonatomic, strong) NSMutableArray *mLikes;
+@property (nonatomic, assign) NSInteger likesCount;
 @property (nonatomic, strong) NSMutableArray *mComments;
 @property (nonatomic, strong) NSMutableArray *mUsersInPhoto;
 @property (nonatomic, strong) NSArray *tags;
@@ -66,10 +67,7 @@
         self.link = [[NSString alloc] initWithString:info[kLink]];
         self.caption = [[InstagramComment alloc] initWithInfo:info[kCaption]];
         self.mLikes = [[NSMutableArray alloc] init];
-        for (NSDictionary *userInfo in (info[kLikes])[kData]) {
-            InstagramUser *user = [[InstagramUser alloc] initWithInfo:userInfo];
-            [self.mLikes addObject:user];
-        }
+        self.likesCount = [info[kLikes][kCount] integerValue];
         
         self.mComments = [[NSMutableArray alloc] init];
         for (NSDictionary *commentInfo in (info[kComments])[kData]) {
@@ -136,11 +134,6 @@
 - (NSArray *)likes
 {
     return [NSArray arrayWithArray:self.mLikes];
-}
-
-- (NSInteger)likesCount
-{
-    return [self.mLikes count];
 }
 
 - (NSArray *)comments
