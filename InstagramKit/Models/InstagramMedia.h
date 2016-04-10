@@ -163,6 +163,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CGSize standardResolutionVideoFrameSize;
 
 /**
+ *  Convenience method to post / delete a like and update the InstagramMedia object. Method will update the model immediately upon execution, but will revert the changes if the API request fails. If the like parameter already matches the model's current userHasLiked property, the method will complete early with (nil, nil).
+ *  @param likeMedia     YES posts a like. NO deletes a like.
+ *  @param completion    JSON dictionary and NSError message.
+ */
+- (void)likeMedia:(BOOL)like completion:(void (^)(NSDictionary * _Nullable serverResponse, NSError * _Nullable error))completion;
+
+/**
  *  Comparing InstagramMedia objects.
  *  @param media    An InstagramMedia object.
  *  @return         YES is Ids match. Else NO.

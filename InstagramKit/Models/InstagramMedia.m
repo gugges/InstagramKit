@@ -18,6 +18,7 @@
 //    IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 //    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#import "InstagramEngine.h"
 #import "InstagramMedia.h"
 #import "InstagramUser.h"
 #import "InstagramComment.h"
@@ -164,6 +165,39 @@
 - (NSArray *)usersInPhoto
 {
     return [NSArray arrayWithArray:self.mUsersInPhoto];
+}
+
+#pragma mark - Convenience
+
+- (void)likeMedia:(BOOL)like completion:(void (^)(NSDictionary * _Nullable, NSError * _Nullable))completion
+{
+    if (like && !self.userHasLiked) {
+        self.likesCount++;
+        self.userHasLiked = YES;
+        [[InstagramEngine sharedEngine] postLikeWithMediaId:self.Id
+                                                    success:^(NSDictionary *serverResponse) {
+                                                        completion(serverResponse, nil);
+                                                        
+                                                    } failure:^(NSError *error, NSInteger serverStatusCode) {
+                                                        self.likesCount--;
+                                                        self.userHasLiked = NO;
+                                                        completion(nil, error);
+                                                    }];
+    } else if (!like && self.userHasLiked) {
+        self.likesCount--;
+        self.userHasLiked = NO;
+        [[InstagramEngine sharedEngine] deleteLikeWithMediaId:self.Id
+                                                      success:^(NSDictionary *serverResponse) {
+                                                          completion(serverResponse, nil);
+                                                          
+                                                      } failure:^(NSError *error, NSInteger serverStatusCode) {
+                                                          self.likesCount++;
+                                                          self.userHasLiked = YES;
+                                                          completion(nil, error);
+                                                      }];
+    } else {
+        completion(nil, nil);
+    }
 }
 
 #pragma mark - Equality
